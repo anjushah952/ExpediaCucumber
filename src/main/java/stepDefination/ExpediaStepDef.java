@@ -12,6 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class ExpediaStepDef {
@@ -46,9 +47,10 @@ public class ExpediaStepDef {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-       List<List<String>>  loginDetail = dataTable.raw();
-        webDriver.findElement(By.xpath("//input[@id='gss-signin-email']")).sendKeys(loginDetail.get(0).get(0));
-        webDriver.findElement(By.xpath("//input[@id='gss-signin-password']")).sendKeys(loginDetail.get(0).get(1));
+
+        List<Map< String,String>>  loginDetail = dataTable.asMaps(String.class , String.class);
+        webDriver.findElement(By.xpath("//input[@id='gss-signin-email']")).sendKeys(loginDetail.get(0).get("username"));
+        webDriver.findElement(By.xpath("//input[@id='gss-signin-password']")).sendKeys(loginDetail.get(0).get("password"));
 
     }
 
@@ -59,11 +61,11 @@ public class ExpediaStepDef {
     }
     @Then("^check login error$")
     public void check_login_error(DataTable tableData){
-        List<List<String>> loginError = tableData.raw();
+        List<Map<String,String> > loginError = tableData.asMaps(String.class , String.class);
         String username_error_msg = webDriver.findElement(By.xpath("//p[@id='signInEmailErrorMessage']")).getText();
-        Assert.assertEquals(loginError.get(0).get(0), username_error_msg);
+        Assert.assertEquals(loginError.get(0).get("emailErrorMsg"), username_error_msg);
         String password_error_msg = webDriver.findElement(By.xpath("//p[@id='signInPasswordErrorMessage']")).getText();
-        Assert.assertEquals(loginError.get(0).get(1), password_error_msg);
+        Assert.assertEquals(loginError.get(0).get("passwordErrorMsg"), password_error_msg);
     }
 
     @Then("^user enter to home page$")
@@ -72,9 +74,9 @@ public class ExpediaStepDef {
     }
     @Then("^check login failure$")
     public void check_login_failure(DataTable loginTable) {
-        List<List<String>> loginFailure = loginTable.raw();
+       List<Map<String,String>> loginFailure = loginTable.asMaps(String.class , String.class);
         String checkFailure = webDriver.findElement(By.xpath("//div[@id='gss-signin-incorrect-email-or-password']")).getText();
-        Assert.assertEquals(loginFailure.get(0).get(0) , checkFailure);
+        Assert.assertEquals(loginFailure.get(0).get("failureMsg"), checkFailure);
 
 
     }
