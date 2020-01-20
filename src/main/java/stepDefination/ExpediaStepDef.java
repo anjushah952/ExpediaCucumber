@@ -1,5 +1,6 @@
 package stepDefination;
 
+import cucumber.api.DataTable;
 import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.en.Given;
@@ -10,6 +11,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class ExpediaStepDef {
@@ -37,15 +39,16 @@ public class ExpediaStepDef {
 
     }
 
-    @Then("^user enter login details \"(.*)\" and \"(.*)\"$")
-    public void user_enter_login_details(String username , String password) {
+    @Then("^user enter login details$")
+    public void user_enter_login_details(DataTable dataTable) {
 //        try {
 //            Thread.sleep(5000);
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-        webDriver.findElement(By.xpath("//input[@id='gss-signin-email']")).sendKeys(username);
-        webDriver.findElement(By.xpath("//input[@id='gss-signin-password']")).sendKeys(password);
+       List<List<String>>  loginDetail = dataTable.raw();
+        webDriver.findElement(By.xpath("//input[@id='gss-signin-email']")).sendKeys(loginDetail.get(0).get(0));
+        webDriver.findElement(By.xpath("//input[@id='gss-signin-password']")).sendKeys(loginDetail.get(0).get(1));
 
     }
 
@@ -54,22 +57,24 @@ public class ExpediaStepDef {
         webDriver.findElement(By.xpath("//button[@id='gss-signin-submit']")).click();
 
     }
-    @Then("^check login error \"(.*)\" and \"(.*)\"$")
-    public void check_login_error(String expectedUserNameError , String expectedPassworderror){
+    @Then("^check login error$")
+    public void check_login_error(DataTable tableData){
+        List<List<String>> loginError = tableData.raw();
         String username_error_msg = webDriver.findElement(By.xpath("//p[@id='signInEmailErrorMessage']")).getText();
-        Assert.assertEquals(expectedUserNameError, username_error_msg);
+        Assert.assertEquals(loginError.get(0).get(0), username_error_msg);
         String password_error_msg = webDriver.findElement(By.xpath("//p[@id='signInPasswordErrorMessage']")).getText();
-        Assert.assertEquals(expectedPassworderror, password_error_msg);
+        Assert.assertEquals(loginError.get(0).get(1), password_error_msg);
     }
 
     @Then("^user enter to home page$")
     public void user_enter_to_home_page() {
 
     }
-    @Then("^check login failure \"([^\"]*)\"$")
-    public void check_login_failure(String expectedFailureMsg) {
+    @Then("^check login failure$")
+    public void check_login_failure(DataTable loginTable) {
+        List<List<String>> loginFailure = loginTable.raw();
         String checkFailure = webDriver.findElement(By.xpath("//div[@id='gss-signin-incorrect-email-or-password']")).getText();
-        Assert.assertEquals(expectedFailureMsg , checkFailure);
+        Assert.assertEquals(loginFailure.get(0).get(0) , checkFailure);
 
 
     }
