@@ -20,7 +20,7 @@ public class ExpediaStepDef {
     public void user_is_in_login_page() {
         System.setProperty("webdriver.chrome.driver", "/Users/rajkumarshah/Documents/Selenium/chromedriver");
         webDriver = new ChromeDriver();
-        webDriver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        webDriver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         webDriver.get("https://www.expedia.com/");
     }
 
@@ -37,10 +37,15 @@ public class ExpediaStepDef {
 
     }
 
-    @Then("^user enter login details$")
-    public void user_enter_login_details() {
-        webDriver.findElement(By.xpath("//input[@id='gss-signin-email']")).sendKeys("abc");
-        webDriver.findElement(By.xpath("//input[@id='gss-signin-password']")).sendKeys("***");
+    @Then("^user enter login details \"(.*)\" and \"(.*)\"$")
+    public void user_enter_login_details(String username , String password) {
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        webDriver.findElement(By.xpath("//input[@id='gss-signin-email']")).sendKeys(username);
+        webDriver.findElement(By.xpath("//input[@id='gss-signin-password']")).sendKeys(password);
 
     }
 
@@ -49,18 +54,26 @@ public class ExpediaStepDef {
         webDriver.findElement(By.xpath("//button[@id='gss-signin-submit']")).click();
 
     }
-    @Then("^check login error$")
-    public void check_login_error(){
+    @Then("^check login error \"(.*)\" and \"(.*)\"$")
+    public void check_login_error(String expectedUserNameError , String expectedPassworderror){
         String username_error_msg = webDriver.findElement(By.xpath("//p[@id='signInEmailErrorMessage']")).getText();
-        Assert.assertEquals("Please enter a valid email address", username_error_msg);
+        Assert.assertEquals(expectedUserNameError, username_error_msg);
         String password_error_msg = webDriver.findElement(By.xpath("//p[@id='signInPasswordErrorMessage']")).getText();
-        Assert.assertEquals("Password must be at least 6 characters", password_error_msg);
+        Assert.assertEquals(expectedPassworderror, password_error_msg);
     }
 
     @Then("^user enter to home page$")
     public void user_enter_to_home_page() {
 
     }
+    @Then("^check login failure \"([^\"]*)\"$")
+    public void check_login_failure(String expectedFailureMsg) {
+        String checkFailure = webDriver.findElement(By.xpath("//div[@id='gss-signin-incorrect-email-or-password']")).getText();
+        Assert.assertEquals(expectedFailureMsg , checkFailure);
+
+
+    }
+
     @After()
     public void closeBrowser(){
         try {
